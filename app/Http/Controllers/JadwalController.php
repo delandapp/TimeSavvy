@@ -5,15 +5,41 @@ namespace App\Http\Controllers;
 use App\Models\jadwal;
 use App\Http\Requests\StorejadwalRequest;
 use App\Http\Requests\UpdatejadwalRequest;
+use Illuminate\Support\Facades\Auth;
 
 class JadwalController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getJadwal()
     {
-        //
+        $jurusan = Auth::user()->detail_users->jurusan;
+
+        $jadwal = Jadwal::with(['user' => function ($query) use ($jurusan) {
+            $query->whereRelation('detail_users', 'jurusan', '=', $jurusan);
+        }])->get();
+    
+        return response()->json($jadwal[0]);
+
+        // $jadwal = Jadwal::all();
+
+        // $data = collect([]);
+
+        // // Kemudian, saat Anda membutuhkan data 'user' untuk jadwal tertentu:
+        // foreach ($jadwal as $itemJadwal) {
+        //     $itemJadwal->load(['user' => function ($query) use ($jurusan) {
+        //         $query->whereRelation('detail_users', 'jurusan', '=', $jurusan);
+        //     }]);
+
+        //     // Sekarang Anda dapat mengakses data 'user' dan 'detail_users' yang sudah difilter:
+        //     foreach ($itemJadwal->user as $user) {
+        //         if ($user->detail_users) { // Memastikan detail_users ada
+        //             $data->push($user); // Menggunakan push untuk menambahkan ke Collection
+        //         }
+        //     }
+        // }
+        return response()->json($jadwal);
     }
 
     /**

@@ -19,7 +19,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $data['email'])->with('role')->first();
+        $user = User::where('email', $data['email'])->with('detail_users')->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -47,7 +47,8 @@ class AuthController extends Controller
 
         $data = $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
+            'nama_lengkap' => 'required',
+            'email' => 'required|email|unique:users',
             'password' => 'required',
             'nisn' => 'required',
             'no_hp' => 'required',
@@ -68,15 +69,9 @@ class AuthController extends Controller
 
         $data['password'] = Hash::make($data['password']);
 
-        $user = User::create([
-            'name' => $data['name'],
-            'password' => $data['password'],
-            'email' => $data['email'],
-        ]);
-        $id_user = User::select('id')->latest()->first();
         $details_user = detail_user::create([
-            'id_user' => $id_user->id,
             'nisn' => $data['nisn'],
+            'nama_lengkap' => $data['nama_lengkap'],
             'no_hp' => $data['no_hp'],
             'alamat' => $data['alamat'],
             'kota' => $data['kota'],
@@ -86,7 +81,14 @@ class AuthController extends Controller
             'jurusan' => $data['jurusan'],
         ]);
 
-        $user = User::with('detail_users')->where('id', $id_user->id)->first();
+        $user = User::create([
+            'id_details' => $details_user->id,
+            'name' => $data['name'],
+            'password' => $data['password'],
+            'email' => $data['email'],
+        ]);
+
+        $user = User::with('detail_users')->where('id', $user->id)->first();
         return response([
             "status" => 201,
             "message" => "Register Berhasil",
