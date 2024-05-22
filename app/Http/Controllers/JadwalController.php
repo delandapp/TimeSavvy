@@ -16,11 +16,11 @@ class JadwalController extends Controller
     {
         $jurusan = Auth::user()->detail_users->jurusan;
 
-        $jadwal = Jadwal::with(['user' => function ($query) use ($jurusan) {
-            $query->whereRelation('detail_users', 'jurusan', '=', $jurusan);
-        }])->get();
+        $data = Jadwal::with(['user' => function ($query) use ($jurusan) {
+            $query->whereRelation('detail_users', 'jurusan', '=', $jurusan)->with('detail_users');
+        }])->get(); 
     
-        return response()->json($jadwal[0]);
+        return response()->json($data);
 
         // $jadwal = Jadwal::all();
 
@@ -39,7 +39,7 @@ class JadwalController extends Controller
         //         }
         //     }
         // }
-        return response()->json($jadwal);
+        // return response()->json($jadwal);
     }
 
     /**
