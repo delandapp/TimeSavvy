@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\jadwal;
 use App\Http\Requests\StorejadwalRequest;
 use App\Http\Requests\UpdatejadwalRequest;
+use App\Http\Resources\JadwalRecource;
 use Illuminate\Support\Facades\Auth;
 
 class JadwalController extends Controller
@@ -18,9 +19,13 @@ class JadwalController extends Controller
 
         $data = Jadwal::with(['user' => function ($query) use ($jurusan) {
             $query->whereRelation('detail_users', 'jurusan', '=', $jurusan)->with('detail_users');
-        }])->get(); 
+        }])->get()[0]; 
     
-        return response()->json($data);
+        return response([
+            'status' => 200,
+            'message' => 'Success get data jadwal',
+            'data' => new JadwalRecource($data),
+        ]);
 
         // $jadwal = Jadwal::all();
 

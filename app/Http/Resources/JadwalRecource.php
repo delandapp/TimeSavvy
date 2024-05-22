@@ -17,6 +17,9 @@ class JadwalRecource extends JsonResource
         return [
             'id' => $this->id,
             'hari' => $this->hari,
+            'siswa' => $this->user->map(
+                fn($siswa) => new UserRecource($siswa)
+            ) 
             
         ];
     }

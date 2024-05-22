@@ -19,7 +19,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $data['email'])->with('detail_users')->first();
+        $user = User::where('email', $data['email'])->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -39,11 +39,17 @@ class AuthController extends Controller
         return response([
             "status" => 200,
             "message" => "Login Berhasil",
-            'data' => new UserRecource($user)
+            'data' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'name' => $user->name,
+                'token' => $user->token,
+            ]
         ], 200);
     }
 
-    public function authRegister(Request $request) {
+    public function authRegister(Request $request)
+    {
 
         $data = $request->validate([
             'name' => 'required',
