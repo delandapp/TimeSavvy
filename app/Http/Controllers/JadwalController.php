@@ -6,6 +6,8 @@ use App\Models\jadwal;
 use App\Http\Requests\StorejadwalRequest;
 use App\Http\Requests\UpdatejadwalRequest;
 use App\Http\Resources\JadwalRecource;
+use App\Models\jadwal_users;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class JadwalController extends Controller
@@ -50,9 +52,21 @@ class JadwalController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function createJadwal(Request $request) 
     {
-        //
+        $data = $request->validate([
+            'id_jadwal' => 'required',
+            'id_user' => 'required',
+            'waktu' => 'required',
+        ]);
+
+        $data = jadwal_users::create($data);
+
+        return response([
+            'status' => 200,
+            'message' => 'Success create jadwal',
+            'data' => new JadwalRecource($data),
+        ]);
     }
 
     /**
