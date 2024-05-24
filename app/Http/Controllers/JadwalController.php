@@ -21,8 +21,8 @@ class JadwalController extends Controller
 
         $data = Jadwal::with(['user' => function ($query) use ($jurusan) {
             $query->whereRelation('detail_users', 'jurusan', '=', $jurusan)->with('detail_users');
-        }])->get()[0]; 
-    
+        }])->get()[0];
+
         return response([
             'status' => 200,
             'message' => 'Success get data jadwal',
@@ -52,7 +52,7 @@ class JadwalController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function createJadwal(Request $request) 
+    public function createJadwal(Request $request)
     {
         $data = $request->validate([
             'id_jadwal' => 'required',
@@ -61,6 +61,9 @@ class JadwalController extends Controller
         ]);
 
         $data = jadwal_users::create($data);
+        $data = jadwal::with(['user' => function ($query) use ($request) {
+            $query->where('id_user', '=', $request['id_user']);
+        }])->first();
 
         return response([
             'status' => 200,
