@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserRecource;
-use App\Models\detail_user;
 use App\Models\User;
+use App\Models\detail_user;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserRecource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -100,5 +101,14 @@ class AuthController extends Controller
             "message" => "Register Berhasil",
             'data' => new UserRecource($user)
         ], 201);
+    }
+
+    public function getUser() {
+        $data = User::with('detail_users')->whereRelation('detail_users', 'jurusan', '=', Auth::user()->detail_users->jurusan)->get();
+        return response([
+            'status' => 200,
+            'message' => 'Success get data user',
+            'data' =>  UserRecource::collection($data),
+        ]);
     }
 }
