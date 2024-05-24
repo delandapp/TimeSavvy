@@ -19,27 +19,59 @@ class DetailUserSeeder extends Seeder
         User::truncate();
         Schema::enableForeignKeyConstraints();
         $data_siswa = [
-    
-                ['name' => 'Muhammad Deland Arjuna Putra', 'email' => 'muhammad.deland36@smk.belajar.id', 'password' => 'admin', 'id_roles' => 1,'id' => 1],
-                ['name' => 'Yogha Irgi Kurniawan', 'email' => 'yogha.irgi36@smk.belajar.id', 'password' => 'admin', 'id_roles' => 1, 'id' => 2],
-                ['name' => 'Geusan Edurais', 'email' => 'geusan.edurais36@smk.belajar.id', 'password' => 'admin', 'id_roles' => 1, 'id' => 3],
-                ['name' => 'Admin', 'email' => 'admin@smk.belajar.id', 'password' => 'admin', 'id_roles' => 3, 'id' => 4],
-            
+
+            ['name' => 'rofi', 'name_lengkap' => 'Abia Rafi Nugroho', 'email' => 'abisnugroho@smk.belajar.id', 'password' => 'admin', 'id' => 1],
+            ['name' => 'Adit', 'name_lengkap' => 'Adit Tris Wicaksono', 'email' => 'adittriswicaksono@smk.belajar.id', 'password' => 'admin',  'id' => 2],
+            ['name' => 'Afiatur', 'name_lengkap' => 'Afiatur Rahman', 'email' => 'afiaturrahman@smk.belajar.id', 'password' => 'admin',  'id' => 3],
+            ['name' => 'alif', 'name_lengkap' => 'Alif Raditya Arifin', 'email' => 'alifraditya@smk.belajar.id', 'password' => 'admin',  'id' => 4],
+
         ];
-        foreach($data_siswa as $data) :
+
+        $data_jurusan = [
+            'Rekayasa Perangkat Lunak',
+            'Listrik',
+            'Mesin',
+            'Otomasi',
+            'Dpib',
+            'Tkp',
+        ];
+
+        $data_kelas = [
+            'X',
+            'XI',
+            'XII',
+        ];
+
+        $data_nama_kelas = [
+            'A',
+            'B',
+            'C',
+        ];
+
+        $data_kota = [
+            'Surakarta',
+            'Klaten',
+            'Boyolali',
+            'Karangayar',
+        ];
+
+        foreach ($data_siswa as $data) :
+            detail_user::create([
+                'nama_lengkap' => $data['name_lengkap'],
+                'nisn' => '225'.random_int(10, 99),
+                'no_hp' => '08'.random_int(10, 99).random_int(10, 99).random_int(10, 99).random_int(10, 99).random_int(10, 99),
+                'alamat' => 'Jalan Cipaganti Rt '. random_int(10, 99) . ' Rw ' . random_int(10, 99),
+                'kota' => $data_kota[random_int(0, 3)],
+                'provinsi' => 'Jawa Tengah',
+                'kode_pos' => '512' . random_int(10, 99),
+                'kelas' => $data_kelas[random_int(0, 2)] . ' ' . $data_nama_kelas[random_int(0, 2)],
+                'jurusan' => $data_jurusan[random_int(0, 5)],
+            ]);
             User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'status' => 'verify',
                 'password' => bcrypt($data['password']),
-                'id_roles' => $data['id_roles'],
-            ]);
-            detail_user::create([
-                'id_user' => $data['id'],
-                'id_alamat' => $data['id'],
-                'id_level' => 1,
-                'id_jurusan' => random_int(1, 3),
-                'id_kelas' => random_int(1, 3),
+                'id_details' => $data['id'],
             ]);
         endforeach;
     }
