@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class JadwalController extends Controller
 {
     public function getHari () {
-        $data = jadwal::get();
+        $data = jadwal::get()[0];
         return response([
             'status' => 200,
             'message' => 'Success get data jadwal',

@@ -17,7 +17,7 @@ class HariRecource extends JsonResource
         return [
             'id' => $this->id,
             'hari' => $this->hari,
-            'siswa' => $this->waktu
+            'waktu' => $this->whenNotNull($this->waktu),
             
         ];
     }
