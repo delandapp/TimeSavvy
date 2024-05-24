@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\jadwal;
+use App\Models\jadwal_users;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
@@ -32,5 +34,15 @@ class JadwalSeeder extends Seeder
                 'waktu' => $data['waktu'],
             ]);
         endforeach;
+        $data_user = 1;
+        for ($i=0; $i < count($data_jadwal); $i++) { 
+            for ($a=1; $a <= 6 ; $a++) { 
+                jadwal_users::insert([
+                    'id_user' => $data_user,
+                    'id_jadwal' => $i,
+                ]);
+                $data_user++;
+            }
+        }
     }
 }
