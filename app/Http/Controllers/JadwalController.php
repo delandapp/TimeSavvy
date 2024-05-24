@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\jadwal;
 use App\Http\Requests\StorejadwalRequest;
 use App\Http\Requests\UpdatejadwalRequest;
+use App\Http\Resources\HariRecource;
 use App\Http\Resources\JadwalRecource;
 use App\Models\jadwal_users;
 use Illuminate\Http\Request;
@@ -12,9 +13,15 @@ use Illuminate\Support\Facades\Auth;
 
 class JadwalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function getHari () {
+        $data = jadwal::get();
+        return response([
+            'status' => 200,
+            'message' => 'Success get data jadwal',
+            'data' => new HariRecource($data),
+        ]);
+    }
+
     public function getJadwal()
     {
         $jurusan = Auth::user()->detail_users->jurusan;

@@ -15,5 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('users')->group(function () {
         Route::get('/jadwal', [JadwalController::class, 'getJadwal']);
         Route::post('/jadwal', [JadwalController::class, 'createJadwal']);
+        Route::get('/hari', [JadwalController::class, 'getHari']);
     });
 });
