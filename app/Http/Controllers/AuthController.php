@@ -103,12 +103,77 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         $data = User::with('detail_users')->whereRelation('detail_users', 'jurusan', '=', Auth::user()->detail_users->jurusan)->get();
         return response([
             'status' => 200,
             'message' => 'Success get data user',
             'data' =>  UserRecource::collection($data),
         ]);
+    }
+
+    public function editUser(Request $request, $id)
+    {
+        $data = $request->validate([
+            'name' => 'required',
+            'nama_lengkap' => 'required',
+            'email' => 'required|email|unique:users',
+            'nisn' => 'required',
+            'no_hp' => 'required',
+            'alamat' => 'required',
+            'kota' => 'required',
+            'provinsi' => 'required',
+            'kode_pos' => 'required',
+            'kelas' => 'required',
+            'jurusan' => 'required',
+        ]);
+
+        $data_user = User::where('id', $id)->with('detail_users')->first();
+
+        if (!$data_user) {
+            return response()->json(['success' => false, 'message' => 'Jadwal Not Found'], 404);
+        }
+        $data_user->update([
+            'name' => $data['name'],
+            'email' => $data['email'],
+        ]);
+
+        $data_user->detail_users->update([
+            'nisn' => $data['nisn'],
+            'nama_lengkap' => $data['nama_lengkap'],
+            'no_hp' => $data['no_hp'],
+            'alamat' => $data['alamat'],
+            'kota' => $data['kota'],
+            'provinsi' => $data['provinsi'],
+            'kode_pos' => $data['kode_pos'],
+            'kelas' => $data['kelas'],
+            'jurusan' => $data['jurusan'],
+        ]);
+
+        return response([
+            "status" => 201,
+            "message" => "Berhasil Update Users",
+            'data' => $data_user
+        ], 201);
+    }
+    public function deleteUser($id)
+    {
+        $data_user = detail_user::where('id', $id)->with('user')->first();
+        if (!$data_user) {
+            return response()->json(['success' => false, 'message' => 'users not found'], 404);
+        }
+
+        $message = response([
+            "status" => 201,
+            "message" => "Berhasil Delete Users",
+            'data' => $data_user
+        ], 201);
+
+        // Hapus data di tabel pivot 'user_jadwal'
+        $data_user->user->jadwal()->detach();
+        $data_user->user()->delete();
+        $data_user->delete();
+        return $message;
     }
 }

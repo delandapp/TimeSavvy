@@ -16,6 +16,7 @@ class UserRecource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'id_pivot' => $this->whenNotNull($this->pivot->id),
             'email' => $this->email,
             'name' => $this->name,
             'token' => $this->whenNotNull($this->token),

@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Auth;
 class JadwalController extends Controller
 {
     public function getHari () {
-        $data = jadwal::get()[0];
+        $data = jadwal::get();
         return response([
             'status' => 200,
             'message' => 'Success get data jadwal',
-            'data' => new HariRecource($data),
+            'data' => HariRecource::collection($data),
         ]);
     }
 
@@ -27,13 +27,14 @@ class JadwalController extends Controller
         $jurusan = Auth::user()->detail_users->jurusan;
 
         $data = Jadwal::with(['user' => function ($query) use ($jurusan) {
-            $query->whereRelation('detail_users', 'jurusan', '=', $jurusan)->with('detail_users');
-        }])->get()[0];
+            $query->whereRelation('detail_users', 'jurusan', '=', $jurusan)->with('detail_users')->withPivot('id');
+        }])->get();
+        // return response([$data]);
 
         return response([
             'status' => 200,
             'message' => 'Success get data jadwal',
-            'data' => new JadwalRecource($data),
+            'data' => JadwalRecource::collection($data),
         ]);
 
         // $jadwal = Jadwal::all();
@@ -78,44 +79,38 @@ class JadwalController extends Controller
             'data' => new JadwalRecource($data),
         ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorejadwalRequest $request)
+    public function editJadwal(Request $request, $id)
     {
-        //
+        $data = $request->validate([
+            'id_jadwal' => 'required',
+            'id_user' => 'required',
+        ]);
+        $data_jadwal = jadwal_users::where('id', $id)->first();
+        if(!$data_jadwal) {
+            return response()->json(['success' => false, 'message' => 'Jadwal Not Found'], 404);
+        }
+        $data_jadwal->update([
+            'id_jadwal' => $request['id_jadwal'],
+            'id_user' => $request['id_user'],
+        ]);
+        $data = jadwal::where('id', $data['id_jadwal'])->with(['user' => function ($query) use ($request) {
+            $query->where('id_user', '=', $request['id_user']);
+        }])->first();
+
+        return response([
+            'status' => 200,
+            'message' => 'Success Update Jadwal',
+            'data' => new JadwalRecource($data),
+        ]);
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(jadwal $jadwal)
+    public function deleteJadwal($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(jadwal $jadwal)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatejadwalRequest $request, jadwal $jadwal)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(jadwal $jadwal)
-    {
-        //
+        $jadwal = jadwal_users::where('id', $id)->first();
+        if(!$jadwal) {
+            return response()->json(['success' => false, 'message' => 'jadwal not found'], 404);
+        }
+        $message = response()->json(['success' => true, 'data' => $jadwal]);
+        $jadwal->delete();
+        return $message;
     }
 }
