@@ -13,6 +13,7 @@ Route::prefix('/auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('users')->group(function () {
+        Route::get('/logout', [AuthController::class, 'logout']);
         Route::get('/jadwal', [JadwalController::class, 'getJadwal']);
         Route::post('/jadwal', [JadwalController::class, 'createJadwal']);
         Route::delete('/jadwal/{id}', [JadwalController::class, 'deleteJadwal']);
